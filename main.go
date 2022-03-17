@@ -1,9 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
+	"os"
+	"text/template"
 )
 
 type IndexData struct {
@@ -12,13 +13,27 @@ type IndexData struct {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	data := IndexData{
 		Title: "Learn Go",
 		Desc:  "Keep learning, keep improving",
 	}
-	jsonStr, _ := json.Marshal(data)
-	w.Write(jsonStr)
+	t := template.New("index.html")
+	// 拿到当前路径
+	path, _ := os.Getwd()
+
+	home := path + "template/home.html"
+	header := path + "template/layout/header.html"
+	footer := path + "template/layout/footer.html"
+	pagination := path + "template/layout/pagination.html"
+	personal := path + "template/layout/personal.html"
+	postList := path + "template/layout/post-list.html"
+	// 因为首页有多个模板嵌套，解析的时候需要把它们都解析出来
+	t, _ = t.ParseFiles(path+"/template/index.html",
+		home, header, footer, pagination, personal, postList)
+	// 必须定义页面上所有的数据
+
+	// execute data
+	t.Execute(w, data)
 }
 
 func main() {
@@ -30,7 +45,6 @@ func main() {
 
 	// handle request
 	http.HandleFunc("/", index)
-
 	if err := server.ListenAndServe(); err != nil {
 		log.Println(err)
 	}
