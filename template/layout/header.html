@@ -10,7 +10,7 @@
             </h1>
             <!-- 导航 -->
             <ul class="header-nav">
-                {{range $index,$elem := .Navigation}} {{if isODD $index}}
+                {{range $index,$elem := .Navigation}} {{if isOdd $index}}
                 <li><a href="{{getNextName $.Navigation $index}}">{{$elem}}</a></li>
                 {{end}} {{end}}
             </ul>
