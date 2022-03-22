@@ -14,7 +14,7 @@ func init() {
 
 func main() {
 	// app entry point
-	// init web app, use http protocal
+	// init web app, use http protocol
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
 	}
