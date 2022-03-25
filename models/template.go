@@ -28,13 +28,17 @@ func (t *TemplateBlog) WriteData(w io.Writer, data interface{}) {
 	}
 }
 
-func InitTemplate(templateDir string) HtmlTemplate {
-	tp := readTemplate(
+func InitTemplate(templateDir string) (HtmlTemplate, error) {
+	tp, err := readTemplate(
 		[]string{"index", "category", "customer",
 			"detail", "login", "pigeonhole", "writing"},
 		templateDir)
 
 	var htmlTemplate HtmlTemplate
+	if err != nil {
+		return htmlTemplate, err
+	}
+
 	htmlTemplate.Index = tp[0]
 	htmlTemplate.Category = tp[1]
 	htmlTemplate.Customer = tp[2]
@@ -43,10 +47,10 @@ func InitTemplate(templateDir string) HtmlTemplate {
 	htmlTemplate.Pigeonhole = tp[5]
 	htmlTemplate.Writing = tp[6]
 
-	return htmlTemplate
+	return htmlTemplate, nil
 }
 
-func readTemplate(templates []string, templateDir string) []TemplateBlog {
+func readTemplate(templates []string, templateDir string) ([]TemplateBlog, error) {
 	var tbs []TemplateBlog
 	for _, view := range templates {
 		viewName := view + ".html"
@@ -63,13 +67,16 @@ func readTemplate(templates []string, templateDir string) []TemplateBlog {
 		t.Funcs(template.FuncMap{
 			"isOdd":       IsOdd,
 			"getNextName": GetNextName,
-			"date":        Date})
+			"date":        Date,
+			"dateDay":     DateDay,
+		})
 
 		// 因为首页有多个模板嵌套，解析的时候需要把它们都解析出来
 		t, err := t.ParseFiles(templateDir+viewName,
 			home, header, footer, pagination, personal, postList)
 		if err != nil {
 			log.Println("Parse template error:", err)
+			return nil, err
 		}
 
 		var tb TemplateBlog
@@ -77,7 +84,7 @@ func readTemplate(templates []string, templateDir string) []TemplateBlog {
 		tbs = append(tbs, tb)
 	}
 
-	return tbs
+	return tbs, nil
 }
 
 func IsOdd(num int) bool {
@@ -90,4 +97,8 @@ func GetNextName(strs []string, index int) string {
 
 func Date(layout string) string {
 	return time.Now().Format(layout)
+}
+
+func DateDay(date time.Time) string {
+	return date.Format("2006-01-01 16:05:05")
 }

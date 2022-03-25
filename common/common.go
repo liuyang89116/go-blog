@@ -3,10 +3,22 @@ package common
 import (
 	"go-blog/config"
 	"go-blog/models"
+	"sync"
 )
 
 var Template models.HtmlTemplate
 
 func LoadTemplate() {
-	Template = models.InitTemplate(config.Cfg.System.CurrentDir + "/template/")
+	w := sync.WaitGroup{}
+	w.Add(1)
+	go func() {
+		// 耗时操作，可以扔到协程
+		var err error
+		Template, err = models.InitTemplate(config.Cfg.System.CurrentDir + "/template/")
+		if err != nil {
+			panic(err)
+		}
+		w.Done()
+	}()
+	w.Wait()
 }
