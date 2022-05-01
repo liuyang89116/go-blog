@@ -11,7 +11,7 @@ import (
 var DB *sql.DB
 
 func init() {
-	dataSourceName := fmt.Sprintf("yang:x@tcp(localhost:3306)/test")
+	dataSourceName := fmt.Sprintf("yang:x@tcp(localhost:3306)/test?parseTime=true")
 	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		log.Println("connect sql error!")
