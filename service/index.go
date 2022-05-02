@@ -56,7 +56,7 @@ func GetAllIndexInfo(page, pageSize int) (*models.HomeResponse, error) {
 		Total:     total,
 		Page:      page,
 		Pages:     pages,
-		PageEnd:   true,
+		PageEnd:   page != pagesCount,
 	}
 
 	return homeResponse, nil
