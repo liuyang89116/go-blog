@@ -7,3 +7,8 @@ type Category struct {
 	CreateAt string
 	UpdateAt string
 }
+
+type CategoryResponse struct {
+	*HomeResponse
+	CategoryName string
+}
